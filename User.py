@@ -5,23 +5,21 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, unset_jwt_cookies
 from datetime import timedelta
 
-# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Supabase Postgres connection string (replace with your credentials)
+
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     "postgresql+psycopg2://postgres.sggwzzmuagyrpxhdljid:JFU5ZfOEbimX5VbP@aws-1-eu-north-1.pooler.supabase.com:5432/postgres"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_SECRET_KEY"] = "super-secret-key"  # Change this for production
+app.config["JWT_SECRET_KEY"] = "super-secret-key" 
 
-# Initialize extensions
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
-# Define the Member table
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -29,18 +27,16 @@ class Member(db.Model):
     password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-# Create tables
+
 with app.app_context():
     db.create_all()
 
-# ------------------- ROUTES -------------------
 
-# Root route
 @app.route("/", methods=["GET"])
 def home():
     return "<h2> Flask connected to Supabase with Register/Login/Logout</h2>"
 
-# Register new member
+
 @app.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -62,7 +58,7 @@ def register():
 
     return jsonify({"message": "Registration successful!", "member": {"id": new_member.id, "name": new_member.name}}), 201
 
-# Login existing member
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -83,7 +79,7 @@ def login():
 
     return jsonify({"message": "Login successful", "token": access_token, "name": member.name}), 200
 
-# Logout (client clears token, server clears cookies)
+
 @app.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
