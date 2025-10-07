@@ -65,7 +65,7 @@ def create_app():
     @jwt_required()
     def logout():
         response = jsonify({"message": "Logout successful"})
-        unset_jwt_cookies(response)
+        
         return response, 200
 
     with app.app_context():
